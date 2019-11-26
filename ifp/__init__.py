@@ -39,6 +39,10 @@ def ifp_sample(dists, indices, out_size):
     if dists.shape != indices.shape:
         raise ValueError('indices.shape must be the same as dists.shape, '
                          'but {} != {}'.format(indices.shape, dists.shape))
+    if np.any(indices >= in_size):
+        raise ValueError(
+            'indices must all be less than in_size but got max value {} >= {}'.
+            format(np.max(indices), in_size))
     return ifp_sample_heap_unchecked(dists.astype(np.float32),
                                      indices.astype(np.uint32),
                                      out_size=out_size)

@@ -2,14 +2,16 @@
 
 cimport numpy as np
 import numpy as np
-import heapq
 cimport cython
+import _heapq as heapq
+# from _heapq import heappop
+# from _heapq import headpush
 
 
-# @cython.boundscheck(False)  # Deactivate bounds checking
-# @cython.wraparound(False)   # Deactivate negative indexing.
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
 def ifp_sample_heap_unchecked(
-        float[:, ::1] dists, unsigned int[:, ::1] indices, int out_size):
+        float[:, ::1] dists, unsigned int[:, ::1] indices, Py_ssize_t out_size):
     """
     Args:
         dists: [in_size, K] floats
@@ -29,36 +31,30 @@ def ifp_sample_heap_unchecked(
     cdef int i
     cdef int k
 
-    out = -np.ones((out_size,), dtype=np.intc)
+    cdef float neg_inf = -np.inf
+
+    out = np.empty((out_size,), dtype=np.intc)
     heap_dists = np.empty((in_size,), dtype=np.float32)
-    heap_dists[:] = -np.inf
-    shuffled_indices = np.arange(in_size, dtype=np.intc)
-    np.random.shuffle(shuffled_indices)
 
     cdef float[:] heap_dists_view = heap_dists
+    for i in range(in_size):
+        heap_dists_view[i] = neg_inf
     cdef int[:] out_view = out
-    cdef int[:] shuffled_indices_view = shuffled_indices
 
-    heap = list(zip(heap_dists_view, shuffled_indices_view))
+    heap = [(neg_inf, float(i)) for i in range(in_size)]
 
-    while heap:
+    for count in range(out_size):
         dist, index = heapq.heappop(heap)
-        if dist != heap_dists_view[index]:
-            continue
+        while dist != heap_dists_view[index]:
+            dist, index = heapq.heappop(heap)
         out_view[count] = index
-        count += 1
-        if count >= out_size:
-            break
-
+        heap_dists_view[index] = 0
         for k in range(1, K):
             i = indices[index, k]
             di = -dists[index, k]
 
             old_di = heap_dists_view[i]
-            heap_dists_view[index] = 0
             if di > old_di:
                 heap_dists_view[i] = di
                 heapq.heappush(heap, (di, i))
-    else:
-        raise RuntimeError('Should have broken...')
     return out

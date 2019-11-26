@@ -5,6 +5,7 @@ Cython implementation based on pre-computed distances (e.g. from a `KDTree`) usi
 ## Installation
 
 ```bash
+pip install Cython
 pip install git+git://github.com/jackd/ifp-sample.git
 ```
 
