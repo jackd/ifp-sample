@@ -1,11 +1,8 @@
 """Followed guide at https://cython.readthedocs.io/en/latest/src/userguide/numpy_tutorial.html#numpy-tutorial ."""
 
-cimport numpy as np
-import numpy as np
 cimport cython
-import _heapq as heapq
-# from _heapq import heappop
-# from _heapq import headpush
+import numpy as np
+import heapq
 
 
 @cython.boundscheck(False)  # Deactivate bounds checking
@@ -14,12 +11,12 @@ def ifp_sample_heap_unchecked(
         float[:, ::1] dists, unsigned int[:, ::1] indices, Py_ssize_t out_size):
     """
     Args:
-        dists: [in_size, K] floats
-        indices: [in_size, K] ints in [0, in_size)
+        dists: [in_size, K] float32
+        indices: [in_size, K] uint32 in [0, in_size)
         out_size: int, (maximum) number of outputs
 
     Returns:
-        indices: [out_size] int indices of sampled points.
+        indices: [out_size] uint32 indices of sampled points.
     """
     cdef Py_ssize_t in_size = indices.shape[0]
     cdef Py_ssize_t K = indices.shape[1]

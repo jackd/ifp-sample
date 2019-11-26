@@ -4,6 +4,7 @@ from __future__ import print_function
 
 from setuptools import setup
 from Cython.Build import cythonize
+import numpy
 
 with open('requirements.txt') as fp:
     install_requires = fp.read().split('\n')
@@ -18,6 +19,7 @@ setup(
     license='MIT',
     packages=['ifp'],
     requirements=install_requires,
+    include_dirs=[numpy.get_include()],
     zip_safe=True,
     ext_modules=cythonize("ifp/_ifp.pyx"),
 )

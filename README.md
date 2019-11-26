@@ -1,6 +1,6 @@
-# Iterative Farthest Point Sampling
+# Approximate Iterative Farthest Point Sampling
 
-Cython implementation based on pre-computed distances (e.g. from a `KDTree`) using `heapq`.
+Cython implementation based on pre-computed distances (e.g. from a `KDTree`) using a priority queue.
 
 ## Installation
 
