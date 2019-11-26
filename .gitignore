@@ -1,0 +1,7 @@
+build
+*.pyc
+__pycache__
+*.c
+*.so
+*.egg-info
+.vscode
