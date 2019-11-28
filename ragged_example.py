@@ -12,7 +12,7 @@ from ifp import ifp_sample_ragged
 
 k = 32
 in_size = 1024
-out_size = 128
+out_size = 512
 max_dist = 0.05
 num_runs = 100
 

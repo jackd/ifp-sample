@@ -27,8 +27,8 @@ def ifp_sample(dists, indices, out_size):
     Returns:
         indices: [out_size] uint32 indices of sampled points.
     """
-    dists = np.ascontiguousarray(dists).astype(np.float32)
-    indices = np.ascontiguousarray(indices).astype(np.uint32)
+    dists = dists.astype(np.float32)
+    indices = indices.astype(np.uint32)
     in_size = indices.shape[0]
     if out_size > in_size:
         raise ValueError(
@@ -48,9 +48,9 @@ def ifp_sample(dists, indices, out_size):
 
 
 def ifp_sample_ragged(dists, indices, row_splits, out_size):
-    dists = np.ascontiguousarray(dists, np.float32).astype(np.float32)
-    indices = np.ascontiguousarray(indices, np.uint32).astype(np.uint32)
-    row_splits = np.ascontiguousarray(row_splits, np.uint32).astype(np.uint32)
+    dists = dists.astype(np.float32)
+    indices = indices.astype(np.uint32)
+    row_splits = row_splits.astype(np.uint32)
     if dists.shape != indices.shape:
         raise ValueError(
             'dists must have same shape as indices, got {} and {}'.format(
@@ -67,6 +67,11 @@ def ifp_sample_ragged(dists, indices, row_splits, out_size):
         raise ValueError(
             'indices should all be under in_size, but {} >= {}'.format(
                 np.max(indices), in_size))
+
+    if out_size > in_size:
+        raise ValueError(
+            'out_size cannot be greater than input size, but {} > {}'.format(
+                out_size, in_size))
 
     return ifp_sample_heap_ragged_unchecked(dists, indices, row_splits,
                                             out_size)

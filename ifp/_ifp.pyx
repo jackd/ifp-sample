@@ -8,7 +8,7 @@ import heapq
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
 def ifp_sample_heap_unchecked(
-        float[:, ::1] dists, unsigned int[:, ::1] indices, Py_ssize_t out_size):
+        float[:, :] dists, unsigned int[:, :] indices, Py_ssize_t out_size):
     """
     Args:
         dists: [in_size, K] float32
@@ -60,8 +60,8 @@ def ifp_sample_heap_unchecked(
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)   # Deactivate negative indexing.
 def ifp_sample_heap_ragged_unchecked(
-        float[::1] dists, unsigned int[::1] indices,
-        unsigned int[::1] row_splits,  Py_ssize_t out_size):
+        float[:] dists, unsigned int[:] indices,
+        unsigned int[:] row_splits,  Py_ssize_t out_size):
     """
     Args:
         dists: [E] float32
