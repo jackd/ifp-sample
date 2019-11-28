@@ -10,6 +10,10 @@ import functools
 
 from ifp import ifp_sample
 
+k = 32
+in_size = 1024
+out_size = 512
+
 
 def ifp_sample_base(indices, dists, out_size):
     """
@@ -63,20 +67,20 @@ def ifp_sample_base(indices, dists, out_size):
 
 
 np.random.seed(123)
-k = 32
-in_size = 1024
-out_size = 512
 x = np.random.uniform(size=(in_size, 2)).astype(dtype=np.float32)
 tree = KDTree(x)
 dists, indices = tree.query(x, k)
 
 kwargs = dict(indices=indices, dists=dists, out_size=out_size)
 
-n = 100
+num_runs = 100
 print('cython implementation')
-print(timeit(functools.partial(ifp_sample, **kwargs), number=n) / n)
+print(
+    timeit(functools.partial(ifp_sample, **kwargs), number=num_runs) / num_runs)
 print('python implementation')
-print(timeit(functools.partial(ifp_sample_base, **kwargs), number=n) / n)
+print(
+    timeit(functools.partial(ifp_sample_base, **kwargs), number=num_runs) /
+    num_runs)
 
 sample_indices = ifp_sample(**kwargs)
 x_out = x[sample_indices]
