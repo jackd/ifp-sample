@@ -21,5 +21,5 @@ setup(
     requirements=install_requires,
     include_dirs=[numpy.get_include()],
     zip_safe=True,
-    ext_modules=cythonize("ifp/_ifp.pyx"),
+    ext_modules=cythonize(["ifp/_ifp.pyx", "ifp/_rej.pyx", "ifp/_hybrid.pyx"]),
 )

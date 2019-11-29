@@ -8,11 +8,19 @@ import heapq
 from timeit import timeit
 import functools
 
-from ifp import ifp_sample
+from ifp import ifp_sample_pq
+from ifp import ifp_sample_hybrid
+
+from benchmark_util import run_benchmarks
+
+np.random.seed(123)
 
 k = 32
 in_size = 1024
 out_size = 512
+
+num_iters = 100
+burn_iters = 50
 
 
 def ifp_sample_base(indices, dists, out_size):
@@ -38,7 +46,6 @@ def ifp_sample_base(indices, dists, out_size):
     i = np.arange(in_size, dtype=np.int64)
     heap_dists = np.empty((in_size,), dtype=np.float32)
     heap_dists[:] = -np.inf
-    np.random.shuffle(i)
     heap = list(zip(heap_dists, i))
     del i
     count = 0
@@ -73,19 +80,27 @@ dists, indices = tree.query(x, k)
 
 kwargs = dict(indices=indices, dists=dists, out_size=out_size)
 
-num_runs = 100
-print('cython implementation')
-print(
-    timeit(functools.partial(ifp_sample, **kwargs), number=num_runs) / num_runs)
-print('python implementation')
-print(
-    timeit(functools.partial(ifp_sample_base, **kwargs), number=num_runs) /
-    num_runs)
+fn_pq = functools.partial(ifp_sample_pq, **kwargs)
+fn_hybrid = functools.partial(ifp_sample_hybrid, **kwargs)
+fn_base = functools.partial(ifp_sample_base, **kwargs)
 
-sample_indices = ifp_sample(**kwargs)
-x_out = x[sample_indices]
+run_benchmarks(burn_iters, num_iters, ('pq', fn_pq), ('hybrid', fn_hybrid),
+               ('base', fn_base))
+
+pq_indices = fn_pq()
+hybrid_indices = fn_hybrid()
+base_indices = fn_base()
+# print(np.stack((base_indices, pq_indices, hybrid_indices), axis=1))
+# print(['base', 'pq', 'hybrid'])
+print('All same (pq vs base)    : {}'.format(
+    np.all(pq_indices == base_indices)))
+print('All same (hybrid vs base): {}'.format(
+    np.all(hybrid_indices == base_indices)))
+print('All same (pq vs hybrid)  : {}'.format(
+    np.all(pq_indices == hybrid_indices)))
 
 import matplotlib.pyplot as plt
+x_out = x[pq_indices]
 plt.scatter(*x.T, c='k')
 plt.scatter(*(x_out.T), c='r')
 plt.show()
