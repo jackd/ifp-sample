@@ -29,7 +29,6 @@ def ifp_sample_heap_progressive_unchecked(
     cdef float dist
     cdef float di
     cdef float old_di
-    cdef int index
     cdef int k
 
     cdef unsigned int[:] index_row
